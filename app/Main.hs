@@ -1,5 +1,7 @@
 module Main where
 
+import           Control.Arrow
+import           Data.Char
 import           Solutions
 
 main :: IO ()

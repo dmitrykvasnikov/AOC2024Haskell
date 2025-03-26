@@ -1,7 +1,7 @@
 module Days.Day01 (solution) where
 
 import           AOC
-import           Control.Arrow
+import           Control.Arrow ((&&&))
 
 type Input = String
 
