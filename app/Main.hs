@@ -1,6 +1,7 @@
 module Main where
 
 import           Solutions
+import           System.IO
 
 main :: IO ()
 main = do
@@ -9,6 +10,8 @@ main = do
 
 printSolution :: IO ()
 printSolution = do
+  hSetBuffering stdin NoBuffering
+  hSetBuffering stdout NoBuffering
   putStr "Enter day number [1-24] (ENTER to exit): "
   getLine >>= \case
     "" -> putStrLn "Bye-bye!!!"

@@ -66,6 +66,7 @@ library
                    ,  Solutions
                    ,  Days.Day01
                    ,  Days.Day02
+                   ,  Days.Day03
 
     -- Modules included in this library but not exported.
     -- other-modules:
