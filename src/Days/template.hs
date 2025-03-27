@@ -12,7 +12,9 @@ part2 :: Input -> Int
 part2 _ = 0
 
 getInput :: FilePath -> IO Input
-getInput input = todo
+getInput fp = do
+  rawInput <- readFile fp
+  pure todo
 
 solution :: String -> IO (Int, Int)
 solution day = getInput ("input/" <> day <> ".input") >>= pure . (part1 &&& part2)

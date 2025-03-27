@@ -65,6 +65,7 @@ library
                    ,  AOC
                    ,  Solutions
                    ,  Days.Day01
+                   ,  Days.Day02
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -78,6 +79,7 @@ library
                  ,    composition
                  ,    containers
                  ,    mtl
+                 ,    split
                  ,    regex-applicative
                  ,    lens
 
