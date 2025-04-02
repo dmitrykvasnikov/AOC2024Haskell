@@ -66,3 +66,9 @@ g ! p = gData g V.! toIndex g p
 
 displayGrid :: (a -> String) -> Grid a -> IO ()
 displayGrid f g = mapM_ putStrLn [concat [f (g ! point x y) | x <- xRange g] | y <- yRange g]
+
+ray :: Grid a -> Direction -> Point -> [Point]
+ray g d p = takeWhile (inBounds g) . iterate (flip move d) $ p
+
+rayValues :: Grid a -> Direction -> Point -> [a]
+rayValues g d = map (g !) . ray g d

@@ -40,6 +40,10 @@ dVector = \case
     w = -1
     e = 1
 
+-- move point in specific direction
+move :: Point -> Direction -> Point
+move p d = p + (dVector d)
+
 -- helpers for clockwise and counter-clockwise turn
 turnCW, turnCCW :: Direction -> Direction
 turnCW dir = if dir == NW then N else succ dir
