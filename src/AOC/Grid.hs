@@ -2,7 +2,7 @@ module AOC.Grid where
 
 import           AOC.Point
 import           Data.Vector (Vector)
-import qualified Data.Vector as V (fromList, toList, (!))
+import qualified Data.Vector as V (fromList, toList, (!), (//))
 
 type Height = Int
 
@@ -56,6 +56,11 @@ get4GridValues, get8GridValues :: Grid a -> Point -> [a]
 get4GridValues g = map (g !) . filter (inBounds g) . get4Points
 get8GridValues g = map (g !) . filter (inBounds g) . get8Points
 
+gridLookup :: (Eq a) => Grid a -> a -> Maybe Point
+gridLookup g el = case dropWhile (/= el) (gridToList g) of
+  [] -> Nothing
+  g' -> Just $ fromIndex g (gWidth g * gHeight g - length g')
+
 (!) :: Grid a -> Point -> a
 g ! p = gData g V.! toIndex g p
 
@@ -63,6 +68,9 @@ g ! p = gData g V.! toIndex g p
 (!?) g p
   | inBounds g p = Just $ g ! p
   | otherwise = Nothing
+
+updateGrid :: Grid a -> Point -> a -> Grid a
+updateGrid grid@(Grid g w h) p a = Grid (g V.// [(toIndex grid p, a)]) w h
 
 displayGrid :: (a -> String) -> Grid a -> IO ()
 displayGrid f g = mapM_ putStrLn [concat [f (g ! point x y) | x <- xRange g] | y <- yRange g]
