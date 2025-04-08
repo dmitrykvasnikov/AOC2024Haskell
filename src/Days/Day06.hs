@@ -1,10 +1,10 @@
 module Days.Day06 (solution) where
 
 import           AOC
-import           Control.Arrow ((&&&))
-import           Data.Set      (Set)
-import qualified Data.Set      as S
-import           Debug.Trace
+import           Control.Arrow              ((&&&))
+import           Control.Monad.State.Strict
+import           Data.Set                   (Set)
+import qualified Data.Set                   as S
 
 data Entity = Start | Empty | Obstacle deriving (Eq, Show)
 
@@ -12,6 +12,8 @@ data Guard = Guard { pos :: Point
                    , dir :: Direction
                    }
   deriving (Eq, Ord, Show)
+
+data Result = Leave | Loop deriving (Eq)
 
 type Input = Grid Entity
 
@@ -25,6 +27,19 @@ startGuard g = case gridLookup g Start of
   Just p  -> Guard p N
   Nothing -> error "No GUARD presented in input"
 
+runGuard :: Grid Entity -> Guard -> (Result, Set Guard)
+runGuard grid guard = runState (go guard) S.empty
+  where
+    go :: Guard -> State (Set Guard) Result
+    go guard = do
+      let movedGuard = moveGuard grid guard
+      case inBounds grid (pos movedGuard) of
+        False -> pure Leave
+        True ->
+          gets (S.member movedGuard) >>= \case
+            True  -> pure Loop
+            False -> modify (S.insert movedGuard) >> go movedGuard
+
 -- we don't account case when guard is surrounded by obstacles from all 8 directions,
 -- in this case this function will be in indless loop
 moveGuard :: Grid Entity -> Guard -> Guard
@@ -34,26 +49,16 @@ moveGuard grid (Guard p d) =
         Just Obstacle -> moveGuard grid (Guard p $ turnCW . turnCW $ d)
         _             -> Guard newP d
 
-isLoop :: Grid Entity -> Guard -> Bool
-isLoop grid guard = go guard S.empty
-  where
-    go :: Guard -> Set Guard -> Bool
-    go guard' visited
-      | S.member guard' visited = True
-      | inBounds grid (pos newGuard) = go newGuard (S.insert newGuard visited)
-      | otherwise = False
-      where
-        newGuard = moveGuard grid guard'
-
 part1 :: Input -> Int
 part1 grid =
   let guard = startGuard grid
-   in S.size . S.fromList . map pos . takeWhile (\(Guard p _) -> inBounds grid p) . iterate (moveGuard grid) $ guard
+   in S.size . S.fromList . map pos . S.toList . snd . runGuard grid $ guard
 
 part2 :: Input -> Int
 part2 grid =
   let guard = startGuard grid
-   in length . filter id . map (\p -> flip isLoop guard . updateGrid grid p $ Obstacle) . getAllPoints $ grid
+      points = getPointsWith grid (/= Obstacle)
+   in length . filter ((== Loop) . fst . flip runGuard guard . (\p -> updateGrid grid p Obstacle)) $ points
 
 getInput :: FilePath -> IO Input
 getInput fp = do

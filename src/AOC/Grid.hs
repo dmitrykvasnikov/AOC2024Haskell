@@ -48,6 +48,9 @@ inBounds g p =
 getAllPoints :: Grid a -> [Point]
 getAllPoints g = point <$> xRange g <*> yRange g
 
+getPointsWith :: (Grid a) -> (a -> Bool) -> [Point]
+getPointsWith grid pred = map snd . filter (\(a, _) -> pred a) . zip (gridToList grid) $ (map (fromIndex grid) [0 ..])
+
 get4GridPoints, get8GridPoints :: Grid a -> Point -> [Point]
 get4GridPoints g = filter (inBounds g) . get4Points
 get8GridPoints g = filter (inBounds g) . get8Points
